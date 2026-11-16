@@ -106,7 +106,7 @@ export function ResultsScreen({ site, answers, onPriorityChange, onEdit, onResta
       >
         <Enter offsetY={-12} style={styles.header}>
           <Pressable accessibilityRole="button" accessibilityLabel={t.backToStart} onPress={onRestart} hitSlop={8}>
-            <Logo height={wide ? 40 : 34} />
+            <Logo height={wide ? 44 : 38} />
           </Pressable>
           {wide ? tabBar : null}
           <LanguageToggle />

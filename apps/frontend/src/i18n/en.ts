@@ -68,7 +68,6 @@ export const en = {
     title: 'What to plant next?',
     lead: 'Compare what you grow today with two alternatives, based on water, soil and what matters most to you.',
     cta: 'Compare crops',
-    note: 'Opens right away. No accounts, no passwords.',
     previousScene: 'Previous scene',
     nextScene: 'Next scene',
     showScene: (name: string) => `Show ${name}`,

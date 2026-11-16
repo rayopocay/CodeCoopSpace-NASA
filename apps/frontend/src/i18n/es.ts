@@ -63,7 +63,6 @@ export const es: Translations = {
     title: '¿Qué sembrar después?',
     lead: 'Díganos dónde siembra y qué tiene sembrado. Le ayudamos a ver qué podría sembrar después.',
     cta: 'Empezar',
-    note: 'Abre directo. Sin cuentas ni contraseñas.',
     previousScene: 'Escena anterior',
     nextScene: 'Escena siguiente',
     showScene: (name) => `Ver ${name}`,

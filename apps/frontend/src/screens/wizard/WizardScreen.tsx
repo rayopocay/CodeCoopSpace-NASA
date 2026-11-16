@@ -75,7 +75,7 @@ export function WizardScreen({ sites, sitesLoading, sitesFailed, onRetrySites, a
       <View style={[styles.column, wide && styles.columnWide]}>
         <View style={styles.header}>
           <Pressable accessibilityRole="button" accessibilityLabel={t.backToStart} onPress={onExit} hitSlop={8}>
-            <Logo height={34} />
+            <Logo height={38} />
           </Pressable>
           <LanguageToggle />
         </View>

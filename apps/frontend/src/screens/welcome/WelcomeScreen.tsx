@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { PanResponder, StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import { FloatingHalos, SCENES, SceneStage } from '../../components/scene';
@@ -7,11 +7,15 @@ import { useReducedMotion } from '../../context/ReducedMotionContext';
 import { usePointer } from '../../hooks/usePointer';
 import { useSceneCarousel } from '../../hooks/useSceneCarousel';
 import { useTranslation } from '../../i18n';
-import { WIDE_BREAKPOINT, colors, fonts, isWeb } from '../../theme';
+import { WIDE_BREAKPOINT, colors, isWeb } from '../../theme';
 import { SceneControl } from './SceneControl';
 
 /** Horizontal distance, in px, a swipe must travel to change the scene. */
 const SWIPE_DISTANCE = 44;
+/** How far down each drawing the face reaches, as a share of its frame. Below it there is only soft fur. */
+const FACE_BOTTOM = 0.8;
+/** Smallest art on phones, so short screens still show the scene. */
+const MIN_STAGE = 220;
 
 /** Immersive welcome: large animated scenes, the question and one clear button. */
 export function WelcomeScreen({ onStart }: { onStart: () => void }) {
@@ -39,9 +43,16 @@ export function WelcomeScreen({ onStart }: { onStart: () => void }) {
     [pointer, next, previous],
   );
 
-  const stageSize = wide ? Math.min(height * 1.02, width * 0.62) : Math.min(width * 1.2, height * 0.6);
+  // On phones the copy sits at the bottom over the art. Its height is measured so the face of
+  // each scene always ends above it, whatever the screen and the language.
+  const [copyHeight, setCopyHeight] = useState(0);
+  const phoneTop = Math.max(48, height * 0.045);
+  // The first 8% of the copy block is still a see-through fade.
+  const room = height - copyHeight * 0.92 - phoneTop;
+  const stageSize = wide ? Math.min(height * 1.02, width * 0.62) : Math.max(MIN_STAGE, Math.min(width * 1.2, height * 0.6, room / FACE_BOTTOM));
   const stageLeft = wide ? width - stageSize * 0.94 : width - stageSize * 0.9;
-  const stageTop = wide ? (height - stageSize) / 2 : Math.max(48, height * 0.045);
+  const stageTop = wide ? (height - stageSize) / 2 : phoneTop;
+  const stageReady = wide || copyHeight > 0;
   const padding = wide ? 64 : 20;
   const titleSize = wide ? Math.min(92, width * 0.066) : Math.min(48, width * 0.128);
 
@@ -54,18 +65,23 @@ export function WelcomeScreen({ onStart }: { onStart: () => void }) {
     <View style={styles.root} {...panResponder.panHandlers}>
       <FloatingHalos pointer={pointer} width={width} height={height} size={wide ? 560 : 300} />
 
-      <View style={{ position: 'absolute', left: stageLeft, top: stageTop }}>
-        <SceneStage index={index} size={stageSize} reduced={reduced} pointer={pointer} />
-      </View>
+      {stageReady ? (
+        <View style={{ position: 'absolute', left: stageLeft, top: stageTop }}>
+          <SceneStage index={index} size={stageSize} reduced={reduced} pointer={pointer} />
+        </View>
+      ) : null}
 
       <Enter offsetY={-10} style={{ position: 'absolute', top: wide ? 36 : 18, left: padding }}>
-        <Logo height={wide ? 52 : 42} />
+        <Logo height={wide ? 56 : 46} />
       </Enter>
       <Enter offsetY={-10} style={{ position: 'absolute', top: wide ? 40 : 20, right: padding }}>
         <LanguageToggle />
       </Enter>
 
-      <View style={[wide ? styles.copyWide : styles.copy, { paddingHorizontal: padding }, scrim]}>
+      <View
+        onLayout={(event) => !wide && setCopyHeight(Math.round(event.nativeEvent.layout.height))}
+        style={[wide ? styles.copyWide : styles.copy, { paddingHorizontal: padding }, scrim]}
+      >
         <View style={wide ? styles.copyColumn : null}>
           {/* On phones the scene name, the dots and the arrows sit right under the image. */}
           {!wide ? (
@@ -85,9 +101,6 @@ export function WelcomeScreen({ onStart }: { onStart: () => void }) {
           </Enter>
           <Enter delay={320} offsetY={22} style={{ marginTop: wide ? 34 : 18 }}>
             <Button label={t.welcome.cta} showArrow onPress={onStart} style={wide ? styles.ctaWide : undefined} />
-            <AppText variant="small" style={[styles.note, { textAlign: wide ? 'left' : 'center' }]}>
-              {t.welcome.note}
-            </AppText>
           </Enter>
           {wide ? (
             <Enter delay={380} style={styles.control}>
@@ -110,5 +123,4 @@ const styles = StyleSheet.create({
   lead: { marginTop: 10, maxWidth: 470, fontSize: 18, lineHeight: 25 },
   leadWide: { marginTop: 20, maxWidth: 470, fontSize: 21, lineHeight: 31 },
   ctaWide: { alignSelf: 'flex-start', minWidth: 320 },
-  note: { marginTop: 12, fontFamily: fonts.semiBold },
 });
