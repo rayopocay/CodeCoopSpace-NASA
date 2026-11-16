@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   titleWide: { fontSize: 44, lineHeight: 48, letterSpacing: -1 },
   help: { marginTop: 6, fontSize: 17, lineHeight: 24 },
   body: { marginTop: 20 },
-  sitesStatus: { gap: 14, borderLeftWidth: 3, borderLeftColor: colors.maize, paddingLeft: 12, paddingVertical: 4 },
+  sitesStatus: { gap: 14, backgroundColor: colors.sand, borderRadius: 16, padding: 14 },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 12, paddingBottom: 18, borderTopWidth: 1, borderTopColor: colors.line },
   nextButton: { flex: 1 },
 });

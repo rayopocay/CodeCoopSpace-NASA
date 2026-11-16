@@ -44,7 +44,7 @@ export function PriorityChangeBanner({ change, data, priority }: PriorityChangeB
 }
 
 const styles = StyleSheet.create({
-  banner: { marginTop: 16, backgroundColor: colors.sand, borderRadius: 20, padding: 16, borderLeftWidth: 6, borderLeftColor: colors.maize },
+  banner: { marginTop: 16, backgroundColor: colors.sand, borderRadius: 20, padding: 16 },
   content: { gap: 4 },
   title: { fontFamily: fonts.display, fontSize: 21, lineHeight: 26, color: colors.ink },
   text: { fontFamily: fonts.body, fontSize: 16, lineHeight: 23, color: colors.ink },

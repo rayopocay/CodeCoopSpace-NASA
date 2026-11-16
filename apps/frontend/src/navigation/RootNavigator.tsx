@@ -13,8 +13,8 @@ import type { Answers } from '../types/answers';
 
 type ScreenName = 'welcome' | 'wizard' | 'results';
 
-/** Wizard step to return to when the farmer edits answers from the results (the crop question). */
-const EDIT_STEP = 1;
+/** Wizard step to return to when the farmer edits answers from the results: the first question. */
+const EDIT_STEP = 0;
 
 /**
  * The whole app is three screens in a row, so a small state machine with a
@@ -65,7 +65,10 @@ export function RootNavigator() {
       style={{
         flex: 1,
         opacity,
-        transform: [{ translateY: opacity.interpolate({ inputRange: [0, 1], outputRange: [reduced ? 0 : 14, 0] }) }],
+        transform: [
+          { translateY: opacity.interpolate({ inputRange: [0, 1], outputRange: [reduced ? 0 : 18, 0] }) },
+          { scale: opacity.interpolate({ inputRange: [0, 1], outputRange: [reduced ? 1 : 0.975, 1] }) },
+        ],
       }}
     >
       {screen === 'welcome' ? <WelcomeScreen onStart={() => navigate('wizard', () => setStep(0))} /> : null}

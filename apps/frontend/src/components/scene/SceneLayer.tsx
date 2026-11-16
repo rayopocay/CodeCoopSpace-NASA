@@ -16,6 +16,8 @@ interface SceneLayerProps {
   pointer: Pointer;
   /** true when the sand transition is available (web, images already sampled). */
   sand: boolean;
+  /** Length of the sand transition, ms. */
+  sandMs?: number;
 }
 
 /** Parallax strength of each depth layer, in px at full cursor travel. */
@@ -26,9 +28,9 @@ const MIST_SCALE = 1.16;
  * One scene = color halo + pre-blurred mist + sharp image + eyelid.
  * Only opacity and position are animated; the blur is baked into the images.
  */
-export function SceneLayer({ scene, active, size, reduced, pointer, sand }: SceneLayerProps) {
+export function SceneLayer({ scene, active, size, reduced, pointer, sand, sandMs }: SceneLayerProps) {
   const motion = SCENE_MOTION[scene.kind];
-  const { progress, sharpOpacity, slide } = useSceneTransition(active, reduced, sand);
+  const { progress, sharpOpacity, slide } = useSceneTransition(active, reduced, sand, sandMs);
   const life = useSceneLife(motion, active && !reduced, Boolean(scene.eye));
 
   // No displacement at all when the person asked for less motion.

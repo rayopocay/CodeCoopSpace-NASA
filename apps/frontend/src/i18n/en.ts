@@ -1,4 +1,5 @@
-import type { ComplementaryClimateReason, CropId, ExplanationFallbackReason, Priority, SoilDrainage, SoilTexture, SourceKind } from '../api/types';
+import type { ClimateMetricId, ComplementaryClimateReason, CropId, ExplanationFallbackReason, Priority, SoilDrainage, SoilTexture, SourceKind } from '../api/types';
+import type { Condition } from '../screens/results/weather/sky';
 import type { LevelKey } from '../constants/domain';
 import type { SceneKey } from './types';
 
@@ -177,7 +178,27 @@ export const en = {
       provider_error: 'The AI service failed.',
       invalid_output: 'The AI answer did not pass the checks and was discarded.',
     } as Record<ExplanationFallbackReason, string>,
-    comparing: 'Comparing crops…',
+    comparing: 'Comparing crops',
+    thinking: 'Yago is thinking',
+    /** What Yago is going through while the AI works, built from the data of this query. */
+    thoughts: {
+      askingNasa: (place: string) => `Asking NASA POWER for ten rainy seasons of rain in ${place}…`,
+      seasonRain: (place: string, mm: string, period: string) => `Looking at the rain in ${place}: ${mm} mm per rainy season on average (NASA POWER, ${period})…`,
+      drySpells: (count: string, total: number, label: string) => `Counting dry spells: ${count} of ${total} ${label}…`,
+      extremes: (dryYear: number, dryMm: string, wetYear: number, wetMm: string) => `Comparing the driest season, ${dryYear} with ${dryMm} mm, and the wettest, ${wetYear} with ${wetMm} mm…`,
+      heat: (celsius: string) => `Checking the afternoon heat: ${celsius} °C average high in the rainy season…`,
+      noNasa: 'NASA POWER did not send the history: water stays without a rating…',
+      currentCrop: (crop: string) => `Starting from what you grow today: ${crop}…`,
+      drainage: {
+        good: 'Taking into account that water drains fast on your land…',
+        poor: 'Taking into account that your land waterlogs: that rules out crops that cannot stand it…',
+        unknown: 'You are not sure whether your land waterlogs: I leave it as something to confirm…',
+      } as Record<SoilDrainage, string>,
+      texture: (texture: string) => `Your soil is ${texture}: that changes how much water it holds…`,
+      priority: (goal: string) => `Weighing first what matters most to you: to ${goal}…`,
+      comparing: (sequences: string[], goal: string) => `Comparing ${sequences.join(', ')} to ${goal}…`,
+      writing: 'Writing your summary in plain words…',
+    },
     errorTitle: 'Could not compare',
     errorText: 'Could not reach the server. Check your connection and try again.',
     retry: 'Try again',
@@ -188,6 +209,55 @@ export const en = {
       `Before, to ${previousGoal}, ${previousSequence} stood out. To ${goal}, ${reason}. The weather and your answers are the same: only how much each thing counts has changed.`,
     highlightKept: (sequence: string) => `${sequence} still stands out`,
     highlightKeptText: (goal: string, reason: string) => `Also to ${goal}: ${reason}. The weather and your answers are the same.`,
+  },
+
+  weather: {
+    hereNow: (place: string) => `Right now in ${place}`,
+    refresh: 'Refresh the weather',
+    loading: 'Looking up the weather',
+    noTemperature: 'No temperature data',
+    /** `sun`: daytime; `evening`: dawn and dusk; `night`. */
+    condition: {
+      downpour: { sun: 'A downpour is coming', evening: 'A downpour is coming', night: 'A downpour is coming' },
+      rain: { sun: 'Rain on the way', evening: 'Rain on the way', night: 'Rain tonight' },
+      drizzle: { sun: 'A light drizzle ahead', evening: 'A light drizzle ahead', night: 'A light drizzle tonight' },
+      scorching: { sun: 'Scorching sun', evening: 'Very hot', night: 'A very hot night' },
+      hot: { sun: 'Warm', evening: 'Warm', night: 'A warm night' },
+      mild: { sun: 'A pleasant day', evening: 'Pleasant out', night: 'A calm night' },
+      cool: { sun: 'Cool', evening: 'Cool', night: 'A cool night' },
+    } as Record<Condition, { sun: string; evening: string; night: string }>,
+    rainSoon: (mm: number) => `${Math.round(mm * 10) / 10} mm of rain expected in the next 6 hours.`,
+    dryNext6h: 'No rain expected in the next 6 hours.',
+    noRainData: 'No rain data for the next hours.',
+    unavailableTitle: 'No forecast right now',
+    notConfigured: 'The server does not have access to Meteomatics yet. The history below still works.',
+    unreachable: 'Meteomatics did not answer. Try refreshing in a while.',
+    next24h: 'Next 24 hours',
+    forecastTitle: 'What is coming · next 24 hours',
+    now: 'Now',
+    rainCaption: 'Bars: rain expected in the 6 hours up to each time.',
+    waterComing: 'Water coming',
+    hottest: 'Hottest',
+    in24h: 'in the next 24 hours',
+    noRain24h: 'No rain in sight for 24 hours',
+    forecastSource: (place: string) =>
+      `Now and next 24 hours: Meteomatics forecast model for an approximate point in ${place}, El Salvador time. It is context only and does not change the comparison. It may differ from what happens on your land.`,
+    historyKicker: 'NASA data · behind your comparison',
+    historyTitle: 'How the rainy season has been here',
+    historySub: (period: string) => `${period}. Past weather, not a forecast.`,
+    metricTitle: {
+      seasonRainMean: 'Rainy season rain',
+      drySpellYears: 'Dry spells',
+      tMaxMean: 'Afternoon heat',
+      precipTotal: 'Rain that week',
+      dryDays: 'Dry days',
+    } as Record<ClimateMetricId, string>,
+    seasonBarsTitle: 'Rain in each rainy season (May to October) · tap a bar',
+    seasonReadout: (mm: number, days: number) => `${mm} mm · longest dry run in July–August: ${days} ${days === 1 ? 'day' : 'days'}`,
+    meanLabel: (mm: number) => `Dashed line: average of ${mm} mm`,
+    drySpellLegend: (days: number) => `Season with ${days} or more days in a row with almost no rain in July and August`,
+    wordsNote:
+      'Words like “scorching” or “light drizzle” are Yago’s way of summing up the figures, not an official classification. The figures come from the sources shown.',
   },
 };
 

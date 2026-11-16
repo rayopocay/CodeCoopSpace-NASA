@@ -51,6 +51,7 @@ src/
   navigation/           The three-screen flow and its state
   screens/
     welcome/ wizard/ results/   One folder per screen, with its own parts
+    results/weather/    The weather view: sky, next 24 hours, farm tiles, NASA rainy-season history
   theme/                Colors, fonts, asset maps, platform flags
   types/                Shared app types
   utils/                Pure helpers

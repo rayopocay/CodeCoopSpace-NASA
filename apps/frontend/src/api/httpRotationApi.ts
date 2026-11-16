@@ -12,7 +12,7 @@ interface HttpOptions {
  * Talks to the team backend following docs/CONTRATO.md.
  * The timeout is generous: the first comparison of an area waits for NASA POWER and for the explanation.
  */
-export function createHttpRotationApi({ baseUrl, timeoutMs = 30000 }: HttpOptions): RotationApi {
+export function createHttpRotationApi({ baseUrl, timeoutMs = 75000 }: HttpOptions): RotationApi {
   const root = baseUrl.replace(/\/$/, '');
 
   async function request(path: string, language: Language, init?: RequestInit): Promise<unknown> {

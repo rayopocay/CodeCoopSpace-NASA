@@ -19,9 +19,10 @@ function SiteStep({ sites, answers, onChange }: StepProps) {
   const { t } = useTranslation();
   return (
     <View style={styles.list} accessibilityRole="radiogroup">
-      {sites.map((site) => (
+      {sites.map((site, index) => (
         <ChoiceCard
           key={site.id}
+          index={index}
           icon="location"
           title={site.department || site.name}
           hint={site.department ? t.wizard.climateReference(site.name) : undefined}
@@ -42,8 +43,8 @@ function CropStep({ sites, answers, onChange }: StepProps) {
   const crops = sites.find((site) => site.id === answers.siteId)?.crops ?? CROPS;
   return (
     <View style={styles.list} accessibilityRole="radiogroup">
-      {crops.map((crop) => (
-        <ChoiceCard key={crop} icon={CROP_ICON[crop]} title={t.crop[crop].name} hint={t.crop[crop].hint} selected={answers.crop === crop} onPress={() => onChange({ crop })} />
+      {crops.map((crop, index) => (
+        <ChoiceCard key={crop} index={index} icon={CROP_ICON[crop]} title={t.crop[crop].name} hint={t.crop[crop].hint} selected={answers.crop === crop} onPress={() => onChange({ crop })} />
       ))}
     </View>
   );
@@ -57,16 +58,16 @@ function SoilStep({ answers, onChange }: StepProps) {
       <View style={styles.group}>
         <AppText variant="label">{t.wizard.textureQuestion}</AppText>
         <View style={styles.grid} accessibilityRole="radiogroup">
-          {SOIL_TEXTURES.map((texture) => (
-            <ChoiceCard key={texture} compact title={t.texture[texture].name} hint={t.texture[texture].hint} selected={answers.texture === texture} onPress={() => onChange({ texture })} />
+          {SOIL_TEXTURES.map((texture, index) => (
+            <ChoiceCard key={texture} index={index} compact title={t.texture[texture].name} hint={t.texture[texture].hint} selected={answers.texture === texture} onPress={() => onChange({ texture })} />
           ))}
         </View>
       </View>
       <View style={styles.group}>
         <AppText variant="label">{t.wizard.drainageQuestion}</AppText>
         <View style={styles.list} accessibilityRole="radiogroup">
-          {SOIL_DRAINAGES.map((drainage) => (
-            <ChoiceCard key={drainage} title={t.drainage[drainage].name} hint={t.drainage[drainage].hint} selected={answers.drainage === drainage} onPress={() => onChange({ drainage })} />
+          {SOIL_DRAINAGES.map((drainage, index) => (
+            <ChoiceCard key={drainage} index={index + SOIL_TEXTURES.length} title={t.drainage[drainage].name} hint={t.drainage[drainage].hint} selected={answers.drainage === drainage} onPress={() => onChange({ drainage })} />
           ))}
         </View>
       </View>
@@ -78,9 +79,10 @@ function PriorityStep({ answers, onChange }: StepProps) {
   const { t } = useTranslation();
   return (
     <View style={styles.list} accessibilityRole="radiogroup">
-      {PRIORITIES.map((priority) => (
+      {PRIORITIES.map((priority, index) => (
         <ChoiceCard
           key={priority}
+          index={index}
           icon={PRIORITY_ICON[priority]}
           title={t.priority[priority].name}
           hint={t.priority[priority].hint}
@@ -114,5 +116,5 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   groups: { gap: 22 },
   group: { gap: 10 },
-  note: { borderLeftWidth: 3, borderLeftColor: colors.maize, paddingLeft: 12, paddingVertical: 2, marginTop: 6 },
+  note: { backgroundColor: colors.sand, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 10, marginTop: 6 },
 });

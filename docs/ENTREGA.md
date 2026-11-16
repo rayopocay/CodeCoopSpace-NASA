@@ -21,5 +21,5 @@
 | Herramienta | Uso o archivo | Evidencia o revisión humana |
 | --- | --- | --- |
 | Codex | Creación de base de repositorio, documentación técnica y planificación inicial | Pendiente de revisión por CodeCoop Space antes de la entrega |
-| Groq (`openai/gpt-oss-20b`, configurable) | Componente del producto: redacta en lenguaje sencillo la explicación de «Su comparación» a partir del resultado calculado por reglas (`services/api/app/explain.py`). No elige cultivos ni aporta cifras o fuentes | Salida validada por el backend y probada con respuestas simuladas; falta revisar textos reales con el equipo |
+| Groq (`openai/gpt-oss-120b` con razonamiento, configurable) | Componente del producto: redacta en lenguaje sencillo la explicación de «Su comparación» a partir del resultado calculado por reglas (`services/api/app/explain.py`). No elige cultivos ni aporta cifras o fuentes | Salida validada por el backend, probada con respuestas simuladas y con llamadas reales; falta revisar textos reales con el equipo |
 | Devin | Cliente Meteomatics en `services/api/app/meteomatics.py`, ruta `/v1/climate/meteomatics`, pruebas y documentación (issue #14) | Pendiente de revisión por CodeCoop Space en el PR |

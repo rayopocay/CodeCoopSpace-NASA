@@ -76,6 +76,16 @@ export interface Climate {
   /** Alert the climate data raises in the comparison, if any. */
   alert: { priority: Priority; text: string } | null;
   note: string;
+  /** Each rainy season with complete NASA data. Empty when the server does not send it. */
+  years: SeasonYear[];
+}
+
+export interface SeasonYear {
+  year: number;
+  /** Total rain from May to October, mm. */
+  seasonRainMm: number;
+  /** Longest run of days under 1 mm in July and August. */
+  longestDrySpellDays: number;
 }
 
 export type CriterionLevel = 'favorable' | 'neutral' | 'unfavorable';
@@ -163,6 +173,8 @@ export interface WeatherPoint {
 
 export interface CurrentWeather {
   status: 'available' | 'partial' | 'unavailable';
+  /** Why there is no forecast (server reason, for example `not_configured`). */
+  reason: string | null;
   current: WeatherPoint | null;
   forecast: WeatherPoint[];
 }

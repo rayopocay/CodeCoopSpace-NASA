@@ -14,10 +14,12 @@ interface SceneStageProps {
   size: number;
   reduced: boolean;
   pointer: Pointer;
+  /** Length of each sand transition, ms. The loader uses a faster one than the welcome screen. */
+  transitionMs?: number;
 }
 
 /** Welcome stage: every scene is stacked and only one is visible at a time. */
-export function SceneStage({ index, size, reduced, pointer }: SceneStageProps) {
+export function SceneStage({ index, size, reduced, pointer, transitionMs = SAND_TRANSITION_MS }: SceneStageProps) {
   // Sand is only used once the browser has sampled the images (web).
   const [sandReady, setSandReady] = useState(false);
   const handleSandReady = useCallback(() => setSandReady(true), []);
@@ -29,7 +31,7 @@ export function SceneStage({ index, size, reduced, pointer }: SceneStageProps) {
   return (
     <View pointerEvents="none" style={{ width: size, height: size }}>
       {SCENES.map((scene, sceneIndex) => (
-        <SceneLayer key={scene.key} scene={scene} active={sceneIndex === index} size={size} reduced={reduced} pointer={pointer} sand={sand} />
+        <SceneLayer key={scene.key} scene={scene} active={sceneIndex === index} size={size} reduced={reduced} pointer={pointer} sand={sand} sandMs={transitionMs} />
       ))}
       {/* The sand moves with the same depth as the sharp image so grains land on it. */}
       <Animated.View
@@ -46,7 +48,7 @@ export function SceneStage({ index, size, reduced, pointer }: SceneStageProps) {
           ],
         }}
       >
-        <SandMorph sources={sources} index={index} size={size} enabled={sand} duration={SAND_TRANSITION_MS} onReady={handleSandReady} />
+        <SandMorph sources={sources} index={index} size={size} enabled={sand} duration={transitionMs} onReady={handleSandReady} />
       </Animated.View>
     </View>
   );

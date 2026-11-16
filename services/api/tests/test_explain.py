@@ -70,12 +70,36 @@ def test_identical_request_is_answered_from_cache():
 
 
 def test_rate_limit_falls_back_to_the_backend_explanation():
-    client, _ = explainer(lambda request: httpx.Response(429, headers={"retry-after": "7"}, json={"error": {"message": "limit"}}))
+    waits: list[float] = []
+    client, recorder = explainer(lambda request: httpx.Response(429, headers={"retry-after": "7"}, json={"error": {"message": "limit"}}), sleep=waits.append)
 
     result = client.explain(FACTS, "es", FALLBACK)
 
     assert (result.source, result.fallbackReason) == ("rules", "rate_limited")
     assert result.verify == FALLBACK.verify
+    # It tried thinking less at each level, then waited what Groq asked once on the lightest.
+    assert [json.loads(request.content).get("reasoning_effort") for request in recorder.requests] == ["high", "medium", "low", "low"]
+    assert waits == [7.0]
+
+
+def test_no_room_this_minute_asks_again_thinking_less():
+    answers = iter([httpx.Response(429, headers={"retry-after": "25"}, json={"error": {"message": "limit"}}), groq_response(GOOD)])
+    waits: list[float] = []
+    client, recorder = explainer(lambda request: next(answers), sleep=waits.append)
+
+    result = client.explain(FACTS, "es", FALLBACK)
+
+    assert (result.source, waits) == ("groq", [])
+    sent = [json.loads(request.content) for request in recorder.requests]
+    assert [(body["reasoning_effort"], body["max_completion_tokens"]) for body in sent] == [("high", 6000), ("medium", 4500)]
+
+
+def test_reasoning_models_are_asked_to_think():
+    client, recorder = explainer(lambda request: groq_response(GOOD))
+
+    client.explain(FACTS, "es", FALLBACK)
+
+    assert json.loads(recorder.requests[0].content)["reasoning_effort"] == "high"
 
 
 def test_timeout_falls_back():

@@ -25,7 +25,7 @@ interface SceneTransition {
  * it switches off quickly while the grains take its shape, and the incoming
  * image appears once the grains have settled.
  */
-export function useSceneTransition(active: boolean, reduced: boolean, sand: boolean): SceneTransition {
+export function useSceneTransition(active: boolean, reduced: boolean, sand: boolean, sandMs: number = SAND_TRANSITION_MS): SceneTransition {
   const progress = useRef(new Animated.Value(0)).current;
   const sharpOpacity = useRef(new Animated.Value(0)).current;
   const slide = useRef(new Animated.Value(0)).current;
@@ -41,13 +41,13 @@ export function useSceneTransition(active: boolean, reduced: boolean, sand: bool
 
     if (active) {
       wasShown.current = true;
-      const duration = reduced ? REDUCED_MS : withSand ? SAND_TRANSITION_MS : FADE_IN_MS;
+      const duration = reduced ? REDUCED_MS : withSand ? sandMs : FADE_IN_MS;
       progress.setValue(0);
       sharpOpacity.setValue(0);
       animate(progress, 1, duration);
       if (withSand) {
         slide.setValue(1);
-        animate(sharpOpacity, 1, SAND_TRANSITION_MS * 0.36, SAND_TRANSITION_MS * 0.6, Easing.inOut(Easing.quad));
+        animate(sharpOpacity, 1, sandMs * 0.36, sandMs * 0.6, Easing.inOut(Easing.quad));
       } else {
         slide.setValue(0);
         animate(slide, 1, duration);
@@ -55,7 +55,7 @@ export function useSceneTransition(active: boolean, reduced: boolean, sand: bool
       }
     } else if (wasShown.current) {
       wasShown.current = false;
-      const duration = reduced ? REDUCED_MS : withSand ? SAND_TRANSITION_MS * 0.7 : FADE_OUT_MS;
+      const duration = reduced ? REDUCED_MS : withSand ? sandMs * 0.7 : FADE_OUT_MS;
       animate(progress, 2, duration, 0, Easing.inOut(Easing.quad));
       if (withSand) {
         animate(sharpOpacity, 0, 300, 0, Easing.out(Easing.quad));
@@ -64,7 +64,7 @@ export function useSceneTransition(active: boolean, reduced: boolean, sand: bool
         animate(sharpOpacity, 0, duration * 0.5, 0, Easing.inOut(Easing.quad));
       }
     }
-  }, [active, reduced, progress, sharpOpacity, slide]);
+  }, [active, reduced, progress, sharpOpacity, slide, sandMs]);
 
   return { progress, sharpOpacity, slide };
 }

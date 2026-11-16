@@ -25,7 +25,20 @@ export default function App() {
   });
 
   useEffect(() => {
-    if (isWeb && typeof document !== 'undefined') document.body.style.backgroundColor = colors.ivory;
+    if (!isWeb || typeof document === 'undefined') return;
+    document.body.style.backgroundColor = colors.ivory;
+    // On phones the browser bar hides while scrolling and the visible area grows.
+    // `100dvh` follows that change, so bars pinned to the bottom stay at the real bottom.
+    if (!document.getElementById('yago-viewport')) {
+      const style = document.createElement('style');
+      style.id = 'yago-viewport';
+      style.textContent = [
+        'html, body, #root { height: 100%; }',
+        '@supports (height: 100dvh) { html, body, #root { height: 100dvh; } }',
+        'body { overscroll-behavior: none; }',
+      ].join('\n');
+      document.head.appendChild(style);
+    }
   }, []);
 
   // If the fonts fail to load, render with system fonts rather than a blank screen.

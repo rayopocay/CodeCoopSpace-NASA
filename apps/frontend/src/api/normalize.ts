@@ -58,6 +58,7 @@ export function normalizeCurrentWeather(payload: unknown, path: string): Current
   };
   return {
     status,
+    reason: optionalString(payload.reason),
     current: payload.current == null ? null : point(payload.current),
     forecast: requireArray(payload, 'forecast', path).map(point),
   };
@@ -147,6 +148,14 @@ function normalizeClimate(value: unknown, path: string): Climate {
     stale: value.stale === true,
     alert,
     note: optionalString(value.note) ?? '',
+    years: Array.isArray(value.years)
+      ? value.years.filter(isObject).flatMap((item) => {
+          const year = numberOrNull(item.year);
+          const rain = numberOrNull(item.seasonRainMm);
+          const spell = numberOrNull(item.longestDrySpellDays);
+          return year !== null && rain !== null && spell !== null ? [{ year, seasonRainMm: rain, longestDrySpellDays: spell }] : [];
+        })
+      : [],
   };
 }
 

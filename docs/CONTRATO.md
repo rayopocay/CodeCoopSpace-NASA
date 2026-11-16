@@ -36,6 +36,7 @@ Respuesta (HTTP 200 siempre que la entrada sea válida, también si falla el cli
 | Campo | Contenido |
 | --- | --- |
 | `climate` | Contexto histórico de NASA POWER: `status` (`available` / `partial` / `unavailable`), `kind` (`season-history` o `saved-sample`), `period`, `periodLabel`, `coverage` en días, `validYears` / `expectedYears`, `metrics[]`, `sourceId`, `spatialScale`, `stale`, `cacheAgeHours`, `stress` (`low` / `moderate` / `high` / `null`), `alert` y `note`. |
+| `climate.years[]` | Cada época lluviosa con datos completos: `year`, `seasonRainMm` (mayo a octubre) y `longestDrySpellDays` (racha más larga con menos de 1 mm en julio y agosto). Vacío con la muestra guardada. La vista de clima dibuja una barra por año. |
 | `climate.metrics[]` | `id`, `value`, `unit`, `total` (para cifras «k de n»), `label` legible, `reason` cuando `value` es `null`, `sourceId`. Historia: `seasonRainMean` (mm), `drySpellYears` (años de `total`), `tMaxMean` (°C). Muestra guardada: `precipTotal`, `dryDays`, `tMaxMean`. |
 | `scenarios[]` | Rotación actual y dos alternativas: `id`, `role` (`current` / `alternative`), `sequence`, `summary`, `limitation`, `missingData`, `criteria[]`, `sourceIds`, `score` y `blocked` (restricción fuerte: terreno que se encharca con el cultivo más sensible). |
 | `criteria[]` | Uno por prioridad, en el orden pedido: `priority`, `status` (`evaluable` / `undetermined`), `level` (`favorable` / `neutral` / `unfavorable` / `null`), `value` y `unit` cuando hay soporte, `reason` legible y `evidence` con ids de `sources[]`. |

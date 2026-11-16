@@ -66,9 +66,11 @@ Lo que las fuentes **no** respaldan y por eso las reglas no afirman: que el frij
 
 ### Explicación con Groq
 
-- Solo desde FastAPI, con `GROQ_API_KEY` y `GROQ_MODEL` (por defecto `openai/gpt-oss-20b`, con salida estructurada `json_schema` estricta; si el modelo no la admite se reintenta en modo JSON).
+- Solo desde FastAPI, con `GROQ_API_KEY`, `GROQ_MODEL` (por defecto `openai/gpt-oss-120b`) y `GROQ_REASONING_EFFORT` (por defecto `high`). Salida estructurada `json_schema` estricta; si no se cumple se reintenta en modo JSON.
+- El modelo razona antes de escribir, con instrucciones para revisar las respuestas de la persona, por qué destaca una opción frente a las otras, qué dato de NASA pesa y qué riesgo importa. Recibe los motivos de las tres opciones y las cifras de la época lluviosa.
+- Groq reserva del límite por minuto los tokens máximos de cada respuesta (la cuenta actual tiene 8 000 por minuto y 1 000 consultas por día). Si no hay cupo, se vuelve a pedir pensando menos (`high` → `medium` → `low`) en lugar de abandonar; en el nivel más liviano espera una vez hasta 20 s si Groq lo pide.
 - El modelo recibe un resumen corto: respuestas, dato climático, valoraciones, motivos, lo que falta confirmar y los nombres de las fuentes. Devuelve cuatro textos: qué considerar, qué pesó, precaución y qué verificar.
-- Validación: forma y longitud de cada campo, sin enlaces, y ninguna cifra que no venga en el resumen. Si algo falla, tarda más de 9 s o llega al límite (HTTP 429), se usa la explicación breve del backend y se indica la causa.
+- Validación: forma y longitud de cada campo, sin enlaces, y ninguna cifra que no venga en el resumen. Si algo falla, cada llamada tarda más de 40 s, el total pasa de 60 s o se agota el límite (HTTP 429), se usa la explicación breve del backend y se indica la causa.
 - Los cultivos, las cifras, las fuentes y las valoraciones no cambian con o sin el modelo (hay una prueba que lo comprueba). La clave no se registra ni llega al cliente.
 
 ## Diseño del cálculo (criterios que guían el método)

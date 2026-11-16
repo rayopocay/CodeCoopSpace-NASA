@@ -64,7 +64,7 @@ export function ScenarioCard({ scenario, sources, priority, highlighted }: Scena
       </View>
 
       {scenario.limitation || scenario.missingData ? (
-        <View style={[styles.limitation, { borderLeftColor: onDark ? colors.maize : colors.ink }]}>
+        <View style={[styles.limitation, { backgroundColor: onDark ? 'rgba(247,243,232,0.08)' : colors.sand }]}>
           <Text style={[styles.sectionLabel, { color: soft }]}>{t.results.watchOut}</Text>
           {scenario.limitation ? <Text style={[styles.limitationText, { color: foreground }]}>{scenario.limitation}</Text> : null}
           {scenario.missingData ? <Text style={[styles.missingData, { color: soft }]}>{scenario.missingData}</Text> : null}
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   sequenceArrow: { fontFamily: fonts.bold, fontSize: 21, lineHeight: 28 },
   summary: { fontFamily: fonts.body, fontSize: 17, lineHeight: 25 },
   pills: { flexDirection: 'row', gap: 8 },
-  limitation: { borderLeftWidth: 3, paddingLeft: 12, gap: 2 },
+  limitation: { borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12, gap: 2 },
   sectionLabel: { fontFamily: fonts.bold, fontSize: 13, lineHeight: 17, letterSpacing: 0.9, textTransform: 'uppercase' },
   limitationText: { fontFamily: fonts.semiBold, fontSize: 16, lineHeight: 23 },
   missingData: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, marginTop: 4 },

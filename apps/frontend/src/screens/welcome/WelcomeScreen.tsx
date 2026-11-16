@@ -1,14 +1,13 @@
 import { useMemo } from 'react';
 import { PanResponder, StyleSheet, View, useWindowDimensions } from 'react-native';
 
-import { SCENES, SceneStage } from '../../components/scene';
+import { FloatingHalos, SCENES, SceneStage } from '../../components/scene';
 import { AppText, Button, Enter, LanguageToggle, Logo } from '../../components/ui';
 import { useReducedMotion } from '../../context/ReducedMotionContext';
 import { usePointer } from '../../hooks/usePointer';
 import { useSceneCarousel } from '../../hooks/useSceneCarousel';
 import { useTranslation } from '../../i18n';
 import { WIDE_BREAKPOINT, colors, fonts, isWeb } from '../../theme';
-import { FloatingHalos } from './FloatingHalos';
 import { SceneControl } from './SceneControl';
 
 /** Horizontal distance, in px, a swipe must travel to change the scene. */
@@ -21,7 +20,8 @@ export function WelcomeScreen({ onStart }: { onStart: () => void }) {
   const { width, height } = useWindowDimensions();
   const wide = width >= WIDE_BREAKPOINT;
   const pointer = usePointer(!reduced);
-  const { index, next, previous, goTo } = useSceneCarousel(SCENES.length, false);
+  // The scenes change by themselves (not with reduced motion); touching an arrow pauses them for a while.
+  const { index, next, previous, goTo } = useSceneCarousel(SCENES.length, !reduced);
 
   // On touch screens a horizontal swipe changes the scene and moves the depth layers.
   const panResponder = useMemo(
@@ -47,7 +47,7 @@ export function WelcomeScreen({ onStart }: { onStart: () => void }) {
 
   // On small screens the copy sits over the art, so it gets a soft ivory fade behind it.
   const scrim = isWeb
-    ? ({ backgroundImage: wide ? 'none' : 'linear-gradient(to bottom, rgba(247,243,232,0) 0%, rgba(247,243,232,0.9) 26%, #F7F3E8 46%)' } as object)
+    ? ({ backgroundImage: wide ? 'none' : 'linear-gradient(to bottom, rgba(247,243,232,0) 0%, rgba(247,243,232,0.92) 13%, #F7F3E8 24%)' } as object)
     : { backgroundColor: 'rgba(247,243,232,0.86)' };
 
   return (
@@ -67,8 +67,12 @@ export function WelcomeScreen({ onStart }: { onStart: () => void }) {
 
       <View style={[wide ? styles.copyWide : styles.copy, { paddingHorizontal: padding }, scrim]}>
         <View style={wide ? styles.copyColumn : null}>
-
-
+          {/* On phones the scene name, the dots and the arrows sit right under the image. */}
+          {!wide ? (
+            <Enter delay={60} offsetY={16} style={styles.controlPhone}>
+              <SceneControl index={index} onNext={next} onPrevious={previous} onSelect={goTo} />
+            </Enter>
+          ) : null}
           <Enter delay={120} offsetY={26}>
             <AppText variant="display" accessibilityRole="header" style={{ fontSize: titleSize, lineHeight: titleSize * (wide ? 1 : 1.04), letterSpacing: wide ? -2.5 : -1 }}>
               {t.welcome.title}
@@ -98,10 +102,11 @@ export function WelcomeScreen({ onStart }: { onStart: () => void }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.ivory, overflow: 'hidden' },
-  copy: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: 22, paddingTop: 64 },
+  copy: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: 22, paddingTop: 56 },
   copyWide: { position: 'absolute', left: 0, top: 0, bottom: 0, width: '56%', justifyContent: 'center', paddingTop: 60 },
   copyColumn: { maxWidth: 560 },
   control: { marginTop: 16 },
+  controlPhone: { marginBottom: 14 },
   lead: { marginTop: 10, maxWidth: 470, fontSize: 18, lineHeight: 25 },
   leadWide: { marginTop: 20, maxWidth: 470, fontSize: 21, lineHeight: 31 },
   ctaWide: { alignSelf: 'flex-start', minWidth: 320 },
