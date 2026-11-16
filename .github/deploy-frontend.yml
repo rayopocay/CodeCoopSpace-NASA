@@ -1,0 +1,39 @@
+name: Deploy frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/frontend/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: Instalar y compilar
+        working-directory: apps/frontend
+        run: |
+          npm ci
+          npm run build:web
+        env:
+          EXPO_PUBLIC_API_URL: ${{ vars.API_URL }}
+
+      - name: Publicar en la rama deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: apps/frontend/dist
+          publish_branch: deploy
+          force_orphan: true
